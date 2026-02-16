@@ -1,0 +1,3 @@
+# Tpa time out in milliseconds
+TpaTimeout: 60000
+

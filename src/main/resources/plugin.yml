@@ -1,0 +1,6 @@
+name: tpaCommand
+version: '1.0'
+main: com.choespacedout.tpaCommand.Main
+api-version: '1.21'
+authors: [ ChloeSpacedOut ]
+description: Test Plugin
