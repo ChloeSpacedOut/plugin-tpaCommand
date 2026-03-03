@@ -87,13 +87,13 @@ public class TeleportRequest {
             final TextComponent targetMessage = Component.text("Teleported you to " + senderName).color(NamedTextColor.GREEN);
             target.sendMessage(targetMessage);
             target.playSound(target.getLocation(), Sound.ENTITY_PLAYER_TELEPORT,1.0F,1.0F);
-            final TextComponent senderMessage = Component.text("Teleported " + senderName + " to you").color(NamedTextColor.GREEN);
+            final TextComponent senderMessage = Component.text("Teleported " + targetName + " to you").color(NamedTextColor.GREEN);
             sender.sendMessage(senderMessage);
         } else {
             sender.teleport(target.getLocation());
             final TextComponent targetMessage = Component.text("Teleported " + senderName + " to you").color(NamedTextColor.GREEN);
             target.sendMessage(targetMessage);
-            final TextComponent senderMessage = Component.text("Teleported you to " + senderName).color(NamedTextColor.GREEN);
+            final TextComponent senderMessage = Component.text("Teleported you to " + targetName).color(NamedTextColor.GREEN);
             sender.sendMessage(senderMessage);
             sender.playSound(target.getLocation(), Sound.ENTITY_PLAYER_TELEPORT,1.0F,1.0F);
         }
