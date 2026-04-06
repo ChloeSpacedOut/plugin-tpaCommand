@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class StoredRequests {
-    public static HashMap<UUID,TeleportRequest> requests = new HashMap<>();
+    public HashMap<UUID,TeleportRequest> requests = new HashMap<>();
 
-    public static void add(UUID id, TeleportRequest teleportRequest) {
+    public void add(UUID id, TeleportRequest teleportRequest) {
         try {
             requests.remove(id);
             requests.put(id,teleportRequest);
@@ -15,7 +15,7 @@ public class StoredRequests {
         }
     }
 
-    public static void remove(UUID id) {
+    public void remove(UUID id) {
         try {
             requests.remove(id);
         } catch (Exception ignored) {}

@@ -19,13 +19,13 @@ import java.util.List;
 import java.util.UUID;
 
 public class TpaResolve {
-    public static LiteralCommandNode<CommandSourceStack> createCommand(final String commandName, boolean isDenied) {
+    public static LiteralCommandNode<CommandSourceStack> createCommand(final String commandName, boolean isDenied, StoredRequests storedRequests) {
         return Commands.literal(commandName)
                 .requires(sender -> sender.getExecutor() instanceof Player)
                 .executes(ctx -> {
                     final Player commandSender = (Player) ctx.getSource().getSender();
                     final UUID commandSenderID = commandSender.getUniqueId();
-                    HashMap<UUID, TeleportRequest> requests = StoredRequests.requests;
+                    HashMap<UUID, TeleportRequest> requests = storedRequests.requests;
                     List<TeleportRequest> sentRequests = new ArrayList<>();
 
                     for (int i = 0; i < requests.size();i++) {
@@ -45,7 +45,7 @@ public class TpaResolve {
                         } else {
                             request.accept();
                         }
-                        StoredRequests.remove(request.id);
+                        storedRequests.remove(request.id);
 
                     } else {
                         final TextComponent textComponent = Component.text("You have multiple teleport requests! Please specify which request to accept").color(NamedTextColor.RED);
@@ -59,17 +59,17 @@ public class TpaResolve {
                             final Player targetPlayer = playerSelector.resolve(ctx.getSource()).getFirst();
                             final UUID targetPlayerID = targetPlayer.getUniqueId();
                             final Player commandSender = (Player) ctx.getSource().getSender();
-                            HashMap<UUID, TeleportRequest> requests = StoredRequests.requests;
+                            HashMap<UUID, TeleportRequest> requests = storedRequests.requests;
 
                             for (int i = 0; i < requests.size();i++) {
                                 TeleportRequest request = (TeleportRequest) requests.values().toArray()[i];
-                                if (request.senderID == targetPlayerID) {
+                                if (request.senderID == targetPlayerID && request.targetID == commandSender.getUniqueId()) {
                                     if (isDenied) {
                                         request.deny();
                                     } else {
                                         request.accept();
                                     }
-                                    StoredRequests.remove(request.id);
+                                    storedRequests.remove(request.id);
                                     return Command.SINGLE_SUCCESS;
                                 }
                             }

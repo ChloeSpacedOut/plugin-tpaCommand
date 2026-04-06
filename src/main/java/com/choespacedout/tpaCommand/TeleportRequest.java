@@ -69,6 +69,15 @@ public class TeleportRequest {
                         )
                 )
 
+        ).append((Component.text("[DISABLE] ")
+                        .color(NamedTextColor.DARK_GRAY)
+                        .decoration(TextDecoration.BOLD, true)
+                        .clickEvent(ClickEvent.runCommand("/tpdisable"))
+                        .hoverEvent(HoverEvent.showText(
+                                Component.text("Toggles off the ability to receive teleport requests\n").color(NamedTextColor.GRAY).append(
+                                        Component.text("/tpdisable " + senderName).color(NamedTextColor.DARK_GRAY)))
+                        )
+                )
         ));
 
     }

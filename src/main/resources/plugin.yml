@@ -1,6 +1,6 @@
-name: tpaCommand
-version: '1.0'
+name: TpaCommand
+version: '1.1'
 main: com.choespacedout.tpaCommand.Main
 api-version: '1.21'
 authors: [ ChloeSpacedOut ]
-description: Test Plugin
+description: Teleport requests plugin
