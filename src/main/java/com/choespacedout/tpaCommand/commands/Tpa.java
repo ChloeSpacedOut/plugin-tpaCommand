@@ -51,11 +51,10 @@ public class Tpa {
 
                             PlayerConfig targetConfig = playerConfigsCache.getPlayerConfig(targetPlayerID);
 
-                            boolean isDenyingRequests = targetConfig.getDenyingRequests();
+                            String allowingRequests = targetConfig.getAllowingRequests();
 
-                            if (isDenyingRequests) {
-                                commandSender.sendRichMessage("<red>This player is not accepting teleport requests");
-                                return Command.SINGLE_SUCCESS;
+                            if (allowingRequests == null) {
+                                allowingRequests = "ALL";
                             }
 
                             List<String> blockedPlayers = targetConfig.getBlockedPlayers();
@@ -66,14 +65,43 @@ public class Tpa {
 
                             final boolean isBlocked = blockedPlayers.contains(commandSenderID.toString());
 
-                            if (isBlocked) {
-                                commandSender.sendRichMessage("<red>This player has you blocked from teleport requests");
+                            List<String> whitelistedPlayers = targetConfig.getWhitelistedPlayers();
+
+                            if (whitelistedPlayers == null) {
+                                whitelistedPlayers = new ArrayList<>();
+                            }
+
+                            final boolean isWhitelisted = whitelistedPlayers.contains(commandSenderID.toString());
+
+                            boolean isDenyingRequests = allowingRequests.equals("NONE") || (allowingRequests.equals("WHITELISTED") && !isWhitelisted);
+
+                            if ((isBlocked || isDenyingRequests) || (isWhitelisted && isBlocked)) {
+                                commandSender.sendRichMessage("<red>This player is not accepting teleport requests");
                                 return Command.SINGLE_SUCCESS;
                             }
 
 
+                            String tpaAutoAcceptMode;
+                            if (!isTpaHere) {
+                                tpaAutoAcceptMode = targetConfig.getAutoTpaAccepting();
+                            } else {
+                                tpaAutoAcceptMode = targetConfig.getAutoTpaHereAccepting();
+                            }
+
+                            if (tpaAutoAcceptMode == null) {
+                                tpaAutoAcceptMode = "NONE";
+                            }
+
+                            boolean isAutoAccept = tpaAutoAcceptMode.equals("ALL") || (tpaAutoAcceptMode.equals("WHITELISTED") && isWhitelisted);
+
                             UUID id = UUID.randomUUID();
-                            TeleportRequest teleportRequest = new TeleportRequest(id, commandSender,targetPlayer,isTpaHere);
+                            TeleportRequest teleportRequest = new TeleportRequest(id, commandSender,targetPlayer,isTpaHere,isAutoAccept);
+
+                            if (isAutoAccept) {
+                                teleportRequest.accept();
+                                return Command.SINGLE_SUCCESS;
+                            }
+
                             storedRequests.add(id,teleportRequest);
                             return Command.SINGLE_SUCCESS;
                         }))

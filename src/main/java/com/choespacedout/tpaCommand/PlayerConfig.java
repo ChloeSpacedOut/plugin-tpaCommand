@@ -4,11 +4,17 @@ import java.util.List;
 
 public class PlayerConfig {
     private List<String> blockedPlayers;
-    private boolean denyingRequests;
+    private List<String> whitelistedPlayers;
+    private String allowingRequests;
+    private String autoTpaAccepting;
+    private String autoTpaHereAccepting;
 
-    public PlayerConfig(List<String> newBlockedPlayers, boolean newDenyingRequests) {
+    public PlayerConfig(List<String> newBlockedPlayers, List<String> newWhitelistedPlayers, String newAllowingRequests, String newAutoTpaAccepting, String newAutoTpaHereAccepting) {
         blockedPlayers = newBlockedPlayers;
-        denyingRequests = newDenyingRequests;
+        whitelistedPlayers = newWhitelistedPlayers;
+        allowingRequests = newAllowingRequests;
+        autoTpaAccepting = newAutoTpaAccepting;
+        autoTpaHereAccepting = newAutoTpaHereAccepting;
     }
 
     public List<String> getBlockedPlayers() {
@@ -19,12 +25,36 @@ public class PlayerConfig {
         blockedPlayers = newBlockedPlayers;
     }
 
-    public boolean getDenyingRequests() {
-        return denyingRequests;
+    public List<String> getWhitelistedPlayers() {
+        return whitelistedPlayers;
     }
 
-    public void setDenyingRequests(boolean newDenyingRequests) {
-        denyingRequests = newDenyingRequests;
+    public void setWhitelistedPlayers(List<String> newWhitelistedPlayers) {
+        whitelistedPlayers = newWhitelistedPlayers;
+    }
+
+    public String getAllowingRequests() {
+        return allowingRequests;
+    }
+
+    public void setAllowingRequests(String newAllowingRequests) {
+        allowingRequests = newAllowingRequests;
+    }
+
+    public String getAutoTpaAccepting() {
+        return autoTpaAccepting;
+    }
+
+    public void setAutoTpaAccepting(String newAutoTpaAccept) {
+        autoTpaAccepting = newAutoTpaAccept;
+    }
+
+    public String getAutoTpaHereAccepting() {
+        return autoTpaHereAccepting;
+    }
+
+    public void setAutoTpaHereAccepting(String newAutoTpaHereAccept) {
+        autoTpaHereAccepting = newAutoTpaHereAccept;
     }
 
 

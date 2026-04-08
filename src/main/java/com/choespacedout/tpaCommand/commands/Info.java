@@ -20,37 +20,87 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Info {
+
+    private static TextComponent autoAcceptMessage(String tpaMode, String mode) {
+        if (mode.equals("ALL")) {
+            return Component.text("\n[SWITCH]")
+                    .color(NamedTextColor.GOLD)
+                    .decoration(TextDecoration.BOLD,true)
+                    .clickEvent(ClickEvent.runCommand("/tpautoaccept " + tpaMode + " whitelisted -i"))
+                    .append(Component.text(" Auto-accepting " + tpaMode + " requests from everyone")
+                            .decoration(TextDecoration.BOLD,false)
+                            .color(NamedTextColor.GREEN)
+                            .clickEvent(ClickEvent.runCommand("")));
+
+        } else if (mode.equals("WHITELISTED")) {
+            return Component.text("\n[SWITCH]")
+                    .color(NamedTextColor.GOLD)
+                    .decoration(TextDecoration.BOLD,true)
+                    .clickEvent(ClickEvent.runCommand("/tpautoaccept " + tpaMode + " none -i"))
+                    .append(Component.text(" Auto-accepting " + tpaMode + " requests from whitelisted")
+                            .decoration(TextDecoration.BOLD,false)
+                            .color(NamedTextColor.YELLOW)
+                            .clickEvent(ClickEvent.runCommand("")));
+        } else {
+            return Component.text("\n[SWITCH]")
+                    .color(NamedTextColor.GOLD)
+                    .decoration(TextDecoration.BOLD,true)
+                    .clickEvent(ClickEvent.runCommand("/tpautoaccept " + tpaMode + " all -i"))
+                    .append(Component.text(" Auto-accepting " + tpaMode + " requests from nobody")
+                            .decoration(TextDecoration.BOLD,false)
+                            .color(NamedTextColor.RED)
+                            .clickEvent(ClickEvent.runCommand("")));
+        }
+    }
+
     public static TextComponent getInfoMessage(PlayerConfig playerConfig) {
 
-        boolean isDenyingRequests = playerConfig.getDenyingRequests();
+        String allowingRequests = playerConfig.getAllowingRequests();
 
-        TextComponent message = Component.text("--------------- [ TPA INFO ] ---------------")
+        TextComponent message = Component.text("--------------------- [ TPA INFO ] ---------------------")
                 .color(NamedTextColor.GRAY);
 
-        if (isDenyingRequests) {
-            message = message.append(Component.text("\nTeleport requests currently disabled")
-                    .color(NamedTextColor.RED)
-                    .append(Component.text(" [ENABLE]")
+        if (allowingRequests.equals("ALL")) {
+            message = message.append(Component.text("\n[SWITCH] ")
+                    .color(NamedTextColor.GOLD)
+                    .decoration(TextDecoration.BOLD,true)
+                    .clickEvent(ClickEvent.runCommand("/tpallow whitelisted -i")))
+                    .append(Component.text("Allowing teleport requests from everyone")
                             .color(NamedTextColor.GREEN)
-                            .decoration(TextDecoration.BOLD,true)
-                            .clickEvent(ClickEvent.runCommand("/tpenable" + " -i"))
-                            .hoverEvent(HoverEvent.showText(
-                                    Component.text("Enables teleport requests\n").color(NamedTextColor.GRAY).append(
-                                            Component.text("/tpenable" + " -i").color(NamedTextColor.DARK_GRAY))
-                            ))));
+                            .decoration(TextDecoration.BOLD,false));
 
+        } else if (allowingRequests.equals("WHITELISTED")) {
+            message = message.append(Component.text("\n[SWITCH] ")
+                    .color(NamedTextColor.GOLD)
+                    .decoration(TextDecoration.BOLD,true)
+                    .clickEvent(ClickEvent.runCommand("/tpallow none -i")))
+                    .append(Component.text("Allowing teleport requests from whitelisted players")
+                            .color(NamedTextColor.YELLOW)
+                            .decoration(TextDecoration.BOLD,false));
         } else {
-            message = message.append(Component.text("\nTeleport requests currently enabled")
-                    .color(NamedTextColor.GREEN)
-                    .append(Component.text(" [DISABLE]")
-                            .color(NamedTextColor.RED)
+            message = message.append(Component.text("\n[SWITCH] ")
+                            .color(NamedTextColor.GOLD)
                             .decoration(TextDecoration.BOLD,true)
-                            .clickEvent(ClickEvent.runCommand("/tpdisable" + " -i"))
-                            .hoverEvent(HoverEvent.showText(
-                                    Component.text("Disables teleport requests\n").color(NamedTextColor.GRAY).append(
-                                            Component.text("/tpdisable" + " -i").color(NamedTextColor.DARK_GRAY))
-                            ))));
+                            .clickEvent(ClickEvent.runCommand("/tpallow all -i")))
+                    .append(Component.text("Allowing teleport requests from nobody")
+                            .color(NamedTextColor.RED)
+                            .decoration(TextDecoration.BOLD,false));
         }
+
+        String autoTpaAccept = playerConfig.getAutoTpaAccepting();
+        if (autoTpaAccept == null) {
+            autoTpaAccept = "NONE";
+        }
+        message = message.append(autoAcceptMessage("tpa",autoTpaAccept));
+
+        String autoTpaHereAccept = playerConfig.getAutoTpaHereAccepting();
+        if (autoTpaHereAccept == null) {
+            autoTpaHereAccept = "NONE";
+        }
+        message = message.append(autoAcceptMessage("tpahere",autoTpaHereAccept));
+
+        message = message.append(Component.text("\n-----------------------------------------------------")
+                .color(NamedTextColor.GRAY));
 
         List<String> blockedPlayers = playerConfig.getBlockedPlayers();
 
@@ -72,7 +122,27 @@ public class Info {
                             ))));
         }
 
-        message = message.append(Component.text("\n-----------------------------------------")
+        List<String> whitelistedPlayers = playerConfig.getWhitelistedPlayers();
+
+        message = message.append(Component.text("\nWhitelisted players:")
+                .color(NamedTextColor.WHITE));
+
+        for (int i = 0; i < whitelistedPlayers.size(); i++) {
+            UUID whitelistedPlayer = UUID.fromString(whitelistedPlayers.get(i));
+            String whitelistedPlayerName = Objects.requireNonNull(Bukkit.getOfflinePlayer(whitelistedPlayer).getName());
+            message = message.append(Component.text("\n• " + whitelistedPlayerName)
+                    .color(NamedTextColor.GRAY)
+                    .append(Component.text(" [UNWHITELIST]")
+                            .color(NamedTextColor.GREEN)
+                            .decoration(TextDecoration.BOLD,true)
+                            .clickEvent(ClickEvent.runCommand("/tpunwhitelist " + whitelistedPlayerName + " -i"))
+                            .hoverEvent(HoverEvent.showText(
+                                    Component.text("Unwhitelists this player\n").color(NamedTextColor.GRAY).append(
+                                            Component.text("/tpunwhitelist " + whitelistedPlayerName + " -i").color(NamedTextColor.DARK_GRAY))
+                            ))));
+        }
+
+        message = message.append(Component.text("\n-----------------------------------------------------")
                 .color(NamedTextColor.GRAY));
 
         return message;

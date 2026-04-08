@@ -47,13 +47,15 @@ public final class Main extends JavaPlugin implements Listener {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(Tpa.createCommand("tpa", false,playerConfigsCache,storedRequests), "Creates a teleport request");
             commands.registrar().register(Tpa.createCommand("tpahere", true,playerConfigsCache,storedRequests), "Creates a teleport request to your position");
-            commands.registrar().register(Cancel.createCommand("tpacancel",storedRequests), "Cancels a teleport request");
+            commands.registrar().register(Cancel.createCommand("tpcancel",storedRequests), "Cancels a teleport request");
             commands.registrar().register(TpaResolve.createCommand("tpaccept", false,storedRequests), "Accepts a teleport request");
             commands.registrar().register(TpaResolve.createCommand("tpdeny", true,storedRequests), "Denies a teleport request");
             commands.registrar().register(SetBlocked.createCommand("tpblock", false,playerConfigs,playerConfigsCache), "Blocks a player from sending teleport requests");
             commands.registrar().register(SetBlocked.createCommand("tpunblock", true,playerConfigs,playerConfigsCache), "Unblocks a player from sending teleport requests");
-            commands.registrar().register(Toggle.createCommand("tpenable", false,playerConfigs,playerConfigsCache), "Toggles on the ability to receive teleport requests");
-            commands.registrar().register(Toggle.createCommand("tpdisable", true,playerConfigs,playerConfigsCache), "Toggles off the ability to receive teleport requests");
+            commands.registrar().register(SetWhitelisted.createCommand("tpwhitelist", false,playerConfigs,playerConfigsCache), "Whitelists a player for sending teleport requests");
+            commands.registrar().register(SetWhitelisted.createCommand("tpunwhitelist", true,playerConfigs,playerConfigsCache), "Unwhitelists a player from sending teleport requests");
+            commands.registrar().register(SetAllowing.createCommand("tpallow",playerConfigs,playerConfigsCache), "Configures who is allowed to send you teleport requests");
+            commands.registrar().register(SetAutoAccept.createCommand("tpautoaccept",playerConfigs,playerConfigsCache), "Configures when teleport requests will be automatically accepted");
             commands.registrar().register(Info.createCommand("tpinfo",playerConfigsCache), "Provides info about your current teleport request settings");
         });
 

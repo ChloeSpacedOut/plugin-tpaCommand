@@ -24,21 +24,21 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @NullMarked
-public class BlockedPlayerArgument implements CustomArgumentType<String,String> {
+public class WhitelistedPlayerArgument implements CustomArgumentType<String,String> {
 
     PlayerConfigsCache playerConfigCache;
-    boolean isUnblocking;
-    public BlockedPlayerArgument(PlayerConfigsCache newPlayerConfigCache, boolean newIsUnblocking) {
+    boolean isUnwhitelisting;
+    public WhitelistedPlayerArgument(PlayerConfigsCache newPlayerConfigCache, boolean newIsUnwhitelisting) {
         playerConfigCache = newPlayerConfigCache;
-        isUnblocking = newIsUnblocking;
+        isUnwhitelisting = newIsUnwhitelisting;
     }
 
     private static final DynamicCommandExceptionType ERROR_NO_PLAYER = new DynamicCommandExceptionType(name -> {
         return MessageComponentSerializer.message().serialize(Component.text("No player was found"));
     });
 
-    private static final DynamicCommandExceptionType ERROR_NO_BLOCKED_PLAYER = new DynamicCommandExceptionType(name -> {
-        return MessageComponentSerializer.message().serialize(Component.text("No blocked player was found"));
+    private static final DynamicCommandExceptionType ERROR_NO_WHITELISTED_PLAYER = new DynamicCommandExceptionType(name -> {
+        return MessageComponentSerializer.message().serialize(Component.text("No whitelisted player was found"));
     });
 
     private static final SimpleCommandExceptionType ERROR_BAD_SOURCE = new SimpleCommandExceptionType(MessageComponentSerializer.message().serialize(Component.text("The source needs to be a CommandSourceStack")));
@@ -52,28 +52,28 @@ public class BlockedPlayerArgument implements CustomArgumentType<String,String> 
     @Override
     public <S> String parse(StringReader reader, S source) throws CommandSyntaxException {
 
-        if (isUnblocking) {
+        if (isUnwhitelisting) {
             if (!(source instanceof CommandSourceStack stack)) {
                 throw ERROR_BAD_SOURCE.create();
             }
 
             UUID commandSenderID = ((CommandSourceStack) source).getExecutor().getUniqueId();
-            final List<String> blockedPlayers = playerConfigCache.getPlayerConfig(commandSenderID).getBlockedPlayers();
-            final String blockedPlayerName = getNativeType().parse(reader);
-            OfflinePlayer blockedPlayer = Bukkit.getOfflinePlayerIfCached(blockedPlayerName);
-            UUID blockedPlayerUUID;
+            final List<String> whitelistedPlayers = playerConfigCache.getPlayerConfig(commandSenderID).getWhitelistedPlayers();
+            final String whitelistedPlayerName = getNativeType().parse(reader);
+            OfflinePlayer whitelistedPlayer = Bukkit.getOfflinePlayerIfCached(whitelistedPlayerName);
+            UUID whitelistedPlayerUUID;
 
             try {
-                blockedPlayerUUID = blockedPlayer.getUniqueId();
+                whitelistedPlayerUUID = whitelistedPlayer.getUniqueId();
             } catch (Exception e) {
-                throw ERROR_NO_BLOCKED_PLAYER.create(blockedPlayerName);
+                throw ERROR_NO_WHITELISTED_PLAYER.create(whitelistedPlayerName);
             }
 
-            if (!blockedPlayers.contains(blockedPlayerUUID.toString())) {
-                throw ERROR_NO_BLOCKED_PLAYER.create(blockedPlayerName);
+            if (!whitelistedPlayers.contains(whitelistedPlayerUUID.toString())) {
+                throw ERROR_NO_WHITELISTED_PLAYER.create(whitelistedPlayerName);
             }
 
-            return blockedPlayerName;
+            return whitelistedPlayerName;
         } else {
             final String playerName = getNativeType().parse(reader);
 
@@ -94,17 +94,17 @@ public class BlockedPlayerArgument implements CustomArgumentType<String,String> 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> ctx, final SuggestionsBuilder builder) {
 
-        if (isUnblocking) {
+        if (isUnwhitelisting) {
             if (!(ctx.getSource() instanceof CommandSourceStack stack)) {
                 return builder.buildFuture();
             }
 
             UUID commandSenderID = stack.getExecutor().getUniqueId();
 
-            final List<String> blockedPlayers = playerConfigCache.getPlayerConfig(commandSenderID).getBlockedPlayers();
+            final List<String> whitelistedPlayers = playerConfigCache.getPlayerConfig(commandSenderID).getWhitelistedPlayers();
 
-            for (int i = 0; i < blockedPlayers.size(); i++) {
-                UUID playerID = UUID.fromString(blockedPlayers.get(i));
+            for (int i = 0; i < whitelistedPlayers.size(); i++) {
+                UUID playerID = UUID.fromString(whitelistedPlayers.get(i));
                 String playerName = Bukkit.getOfflinePlayer(playerID).getName();
 
                 if (playerName.toLowerCase().startsWith(builder.getRemainingLowerCase())) {

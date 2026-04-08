@@ -23,13 +23,15 @@ public class TeleportRequest {
     public final String targetName;
     public final boolean shouldTpaHere;
 
-    public TeleportRequest(UUID newID, Player sender, Player target, boolean newShouldTpaHere) {
+    public TeleportRequest(UUID newID, Player sender, Player target, boolean newShouldTpaHere, boolean isAutoAccept) {
         id = newID;
         senderID = sender.getUniqueId();
         targetID = target.getUniqueId();
         senderName = sender.getName();
         targetName = target.getName();
         shouldTpaHere = newShouldTpaHere;
+
+        if (isAutoAccept) return;
 
         final TextComponent senderMessage = Component.text("Sent a teleport request to " + targetName).color(NamedTextColor.GREEN);
         sender.sendMessage(senderMessage);
