@@ -57,6 +57,10 @@ public class Info {
 
         String allowingRequests = playerConfig.getAllowingRequests();
 
+        if (allowingRequests == null) {
+            allowingRequests = "NONE";
+        }
+
         TextComponent message = Component.text("--------------------- [ TPA INFO ] ---------------------")
                 .color(NamedTextColor.GRAY);
 
